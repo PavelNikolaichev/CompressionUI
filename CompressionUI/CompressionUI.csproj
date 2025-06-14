@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+<!--        <OutputType>Exe</OutputType>-->
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Models\"/>
+        <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
+        
+        <!-- Remove Avalonia.Diagnostics package from build output in Release -->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+
+        <!-- Python integration -->
+        <PackageReference Include="pythonnet" Version="3.0.5" />
+
+        <!-- Node Editor on Avalonia -->
+        <PackageReference Include="NodifyM.Avalonia" Version="1.0.0" />
+
+        <!-- Other stuff for logging and such -->
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Core\Extensions\" />
+      <Folder Include="Core\Interfaces\" />
+      <Folder Include="Models\Nodes\" />
+      <Folder Include="Models\Pipeline\" />
+    </ItemGroup>
+
+</Project>
