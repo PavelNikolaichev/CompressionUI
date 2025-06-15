@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CompressionUI.Services;
+using CompressionUI.Services.Execution;
 using CompressionUI.ViewModels;
 using CompressionUI.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +44,10 @@ public partial class App : Application
     private void ConfigureServices(IServiceCollection services)
     {
         services.AddLogging(builder => builder.AddSerilog());
+        
+        // ViewModels
         services.AddSingleton<MainWindowViewModel>();
+        services.AddTransient<PythonConsoleViewModel>();
         
         // Python service
         services.AddSingleton<PythonService>();
@@ -51,6 +55,11 @@ public partial class App : Application
         // Nodes registry
         services.AddSingleton<INodeRegistry, NodeRegistry>();
         services.AddSingleton<NodeFactory>();
+        
+        // Execution services
+        services.AddSingleton<NodeDependencyResolver>();
+        services.AddSingleton<INodeExecutionStrategy, SequentialExecutionStrategy>();
+        services.AddSingleton<NodeExecutionService>();
         
         // Node Types
         services.AddTransient<Models.Nodes.Utility.DebugPrintNode>();

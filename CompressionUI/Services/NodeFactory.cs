@@ -105,27 +105,46 @@ public class NodeFactory
 
     private List<INode> CreateSimpleMathTemplate()
     {
-        return new List<INode>
+        // Create nodes
+        var numberA = CreateNodeWithProperties("VariableNode", new Dictionary<string, object>
         {
-            CreateNodeWithProperties("VariableNode", new Dictionary<string, object>
-            {
-                ["valueType"] = "Float",
-                ["value"] = "10.5"
-            }, 100, 100),
-            
-            CreateNodeWithProperties("VariableNode", new Dictionary<string, object>
-            {
-                ["valueType"] = "Float",
-                ["value"] = "5.2"
-            }, 100, 200),
-            
-            CreateNodeWithProperties("ArithmeticNode", new Dictionary<string, object>
-            {
-                ["operation"] = "Add"
-            }, 300, 150),
-            
-            CreateNode("DebugPrintNode", 500, 150)
-        };
+            ["valueType"] = "Float",
+            ["value"] = "10.5"
+        }, 100, 100);
+        
+        var numberB = CreateNodeWithProperties("VariableNode", new Dictionary<string, object>
+        {
+            ["valueType"] = "Float",
+            ["value"] = "5.2"
+        }, 100, 200);
+        
+        var arithmetic = CreateNodeWithProperties("ArithmeticNode", new Dictionary<string, object>
+        {
+            ["operation"] = "Add"
+        }, 300, 150);
+        
+        var debugPrint = CreateNode("DebugPrintNode", 500, 150);
+        
+        // Create connections
+        // Connect first variable to arithmetic input A
+        var conn1 = new NodeConnection(
+            numberA.GetOutputPin("output"), 
+            arithmetic.GetInputPin("a")
+        );
+        
+        // Connect second variable to arithmetic input B
+        var conn2 = new NodeConnection(
+            numberB.GetOutputPin("output"), 
+            arithmetic.GetInputPin("b")
+        );
+        
+        // Connect arithmetic output to debug print input
+        var conn3 = new NodeConnection(
+            arithmetic.GetOutputPin("result"), 
+            debugPrint.GetInputPin("input")
+        );
+        
+        return new List<INode> { numberA, numberB, arithmetic, debugPrint };
     }
 
     private List<INode> CreatePyTorchTestTemplate()

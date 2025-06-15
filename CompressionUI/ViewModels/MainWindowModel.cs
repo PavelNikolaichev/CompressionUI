@@ -3,6 +3,7 @@ using CompressionUI.Services;
 using CompressionUI.Views;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using CompressionUI.Services.Execution;
 
 namespace CompressionUI.ViewModels;
 
@@ -15,17 +16,20 @@ public class MainWindowViewModel : ViewModelBase
     private string _pythonStatus = "Python: Not Connected";
     private string _nodeRegistryStatus = "Nodes: Loading...";
     private PythonConsoleWindow? _consoleWindow;
+    private readonly NodeExecutionService _executionService;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger, 
         PythonService pythonService,
         INodeRegistry nodeRegistry,
+        NodeExecutionService executionService,
         NodeFactory nodeFactory)
     {
         _logger = logger;
         _pythonService = pythonService;
         _nodeRegistry = nodeRegistry;
         _nodeFactory = nodeFactory;
+        _executionService = executionService;
         _logger.LogInformation("MainWindowViewModel initialized");
         
         // Commands
@@ -135,6 +139,10 @@ public class MainWindowViewModel : ViewModelBase
             _logger.LogInformation("Testing workflow template...");
             var template = _nodeFactory.CreateWorkflowTemplate("simple-math");
             _logger.LogInformation("Created simple-math template with {Count} nodes", template.Count);
+            
+            // Execute the template
+            var executionResult = await _executionService.ExecuteNodesAsync(template);
+            
 
             _logger.LogInformation("Node registry test completed successfully!");
         }
