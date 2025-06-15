@@ -43,12 +43,16 @@ public class NodeRegistry : INodeRegistry
         // Data nodes
         RegisterNode<TextDataLoaderNode>("Text Data Loader");
         RegisterNode<ImageDataLoaderNode>("Image Data Loader");
+        RegisterNode<DatasetNode>("Dataset");
 
         // Math nodes
         RegisterNode<ArithmeticNode>("Arithmetic");
+        RegisterNode<TensorOperationNode>("Tensor Operation");
 
         // Model nodes
         RegisterNode<PyTorchModelNode>("PyTorch Model");
+        RegisterNode<TrainingNode>("Training Node");
+        RegisterNode<InferenceNode>("Inference Node");
 
         _logger.LogInformation("Registered {Count} built-in nodes", _registeredNodes.Count);
     }

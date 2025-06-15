@@ -55,6 +55,7 @@ public partial class App : Application
         // Nodes registry
         services.AddSingleton<INodeRegistry, NodeRegistry>();
         services.AddSingleton<NodeFactory>();
+        services.AddSingleton<NodeSerializationService>();
         
         // Execution services
         services.AddSingleton<NodeDependencyResolver>();
@@ -62,12 +63,17 @@ public partial class App : Application
         services.AddSingleton<NodeExecutionService>();
         
         // Node Types
+        
         services.AddTransient<Models.Nodes.Utility.DebugPrintNode>();
         services.AddTransient<Models.Nodes.Utility.VariableNode>();
         services.AddTransient<Models.Nodes.Utility.MemoryCleanupNode>();
         services.AddTransient<Models.Nodes.Data.TextDataLoaderNode>();
         services.AddTransient<Models.Nodes.Data.ImageDataLoaderNode>();
+        services.AddTransient<Models.Nodes.Data.DatasetNode>();
         services.AddTransient<Models.Nodes.Math.ArithmeticNode>();
+        services.AddTransient<Models.Nodes.Math.TensorOperationNode>();
         services.AddTransient<Models.Nodes.Model.PyTorchModelNode>();
+        services.AddTransient<Models.Nodes.Model.TrainingNode>();
+        services.AddTransient<Models.Nodes.Model.InferenceNode>();
     }
 }

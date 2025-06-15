@@ -1,8 +1,5 @@
 ﻿using CompressionUI.Models.Nodes;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CompressionUI.Services;
 
@@ -61,12 +58,14 @@ public class NodeFactory
     /// </summary>
     public List<INode> CreateWorkflowTemplate(string templateName)
     {
+        // TODO: add connections between nodes for all the templates
         return templateName.ToLower() switch
         {
             "text-processing" => CreateTextProcessingTemplate(),
             "image-loading" => CreateImageLoadingTemplate(),
             "simple-math" => CreateSimpleMathTemplate(),
             "pytorch-test" => CreatePyTorchTestTemplate(),
+            "inference" => CreateInferencePipelineTemplate(),
             _ => throw new ArgumentException($"Unknown template: {templateName}")
         };
     }
@@ -161,6 +160,41 @@ public class NodeFactory
             CreateNode("MemoryCleanupNode", 500, 100)
         };
     }
+    
+    private List<INode> CreateInferencePipelineTemplate()
+    {
+        return new List<INode>
+        {
+            // Load dataset
+            CreateNodeWithProperties("DatasetNode", new Dictionary<string, object>
+            {
+                ["datasetPath"] = "test_data/",
+                ["datasetType"] = "ImageFolder"
+            }, 100, 100),
+        
+            // Load trained model
+            CreateNodeWithProperties("PyTorchModelNode", new Dictionary<string, object>
+            {
+                ["modelPath"] = "trained_model.pt",
+                ["device"] = "auto"
+            }, 100, 250),
+        
+            // Run optimized inference
+            CreateNodeWithProperties("InferenceNode", new Dictionary<string, object>
+            {
+                ["device"] = "auto",
+                ["batchSize"] = 8,
+                ["optimize"] = true,
+                ["outputFormat"] = "probabilities"
+            }, 400, 175),
+        
+            // Debug output
+            CreateNode("DebugPrintNode", 700, 175),
+        
+            // Memory cleanup
+            CreateNode("MemoryCleanupNode", 700, 300)
+        };
+    }
 
     /// <summary>
     /// Get available workflow templates
@@ -172,7 +206,8 @@ public class NodeFactory
             ["text-processing"] = "Text Processing Workflow",
             ["image-loading"] = "Image Loading Workflow", 
             ["simple-math"] = "Simple Math Operations",
-            ["pytorch-test"] = "PyTorch Model Testing"
+            ["pytorch-test"] = "PyTorch Model Testing",
+            ["inference"] = "Inference Pipeline",
         };
     }
 

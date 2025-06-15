@@ -17,12 +17,14 @@ public class MainWindowViewModel : ViewModelBase
     private string _nodeRegistryStatus = "Nodes: Loading...";
     private PythonConsoleWindow? _consoleWindow;
     private readonly NodeExecutionService _executionService;
+    private readonly NodeSerializationService _serializationService;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger, 
         PythonService pythonService,
         INodeRegistry nodeRegistry,
         NodeExecutionService executionService,
+        NodeSerializationService serializationService,
         NodeFactory nodeFactory)
     {
         _logger = logger;
@@ -30,12 +32,14 @@ public class MainWindowViewModel : ViewModelBase
         _nodeRegistry = nodeRegistry;
         _nodeFactory = nodeFactory;
         _executionService = executionService;
+        _serializationService = serializationService;
         _logger.LogInformation("MainWindowViewModel initialized");
         
         // Commands
         OpenPythonConsoleCommand = new RelayCommand(() => OpenPythonConsole());
         TestNodeRegistryCommand = new RelayCommand(async () => await TestNodeRegistryAsync());
-        
+        TestSerializationCommand = new RelayCommand(async () => await TestSerializationAsync());
+
         // Initialize services in the background
         _ = InitializeServicesAsync();
     }
@@ -56,6 +60,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public ICommand OpenPythonConsoleCommand { get; }
     public ICommand TestNodeRegistryCommand { get; }
+    public ICommand TestSerializationCommand { get; }
 
     private async Task InitializeServicesAsync()
     {
@@ -149,6 +154,48 @@ public class MainWindowViewModel : ViewModelBase
         catch (System.Exception ex)
         {
             _logger.LogError(ex, "Node registry test failed");
+        }
+    }
+    
+    private async Task TestSerializationAsync()
+    {
+        _logger.LogInformation("Testing node serialization...");
+
+        try
+        {
+            // Create a complex workflow
+            var nodes = _nodeFactory.CreateWorkflowTemplate("simple-math");
+            
+            // Connect the nodes
+            _nodeFactory.ConnectNodes(nodes[0], "output", nodes[2], "a");
+            _nodeFactory.ConnectNodes(nodes[1], "output", nodes[2], "b");
+            _nodeFactory.ConnectNodes(nodes[2], "result", nodes[3], "input");
+
+            _logger.LogInformation("Created test workflow with {Count} nodes", nodes.Count);
+
+            // Test serialization
+            var tempFile = Path.Combine(Path.GetTempPath(), "test_graph.cgraph");
+            
+            await _serializationService.SaveNodesToFileAsync(nodes, tempFile, "Test Serialization Graph");
+            _logger.LogInformation("Saved graph to: {FilePath}", tempFile);
+
+            // Test deserialization
+            var loadedNodes = await _serializationService.LoadNodesFromFileAsync(tempFile);
+            _logger.LogInformation("Loaded {Count} nodes from file", loadedNodes.Count);
+
+            // Test execution of loaded nodes
+            var result = await _executionService.ExecuteNodesAsync(loadedNodes);
+            _logger.LogInformation("Executed loaded graph: Success={Success}, Nodes={NodeCount}", 
+                result.Success, result.NodesExecuted);
+
+            // Cleanup
+            File.Delete(tempFile);
+
+            _logger.LogInformation("Serialization test completed successfully!");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Serialization test failed");
         }
     }
 

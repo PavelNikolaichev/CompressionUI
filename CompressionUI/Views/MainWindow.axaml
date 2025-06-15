@@ -25,9 +25,11 @@
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
-            <MenuItem Header="_View">
+            <MenuItem Header="_Tools">
                 <MenuItem Header="_Python Console" Command="{Binding OpenPythonConsoleCommand}" />
                 <MenuItem Header="_Test Node Registry" Command="{Binding TestNodeRegistryCommand}" />
+                <!-- <MenuItem Header="_Test Node Execution" Command="{Binding TestNodeExecutionCommand}" /> -->
+                <MenuItem Header="_Test Serialization" Command="{Binding TestSerializationCommand}" />
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" />
