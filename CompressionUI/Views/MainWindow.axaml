@@ -26,7 +26,7 @@
                 <MenuItem Header="_Exit" />
             </MenuItem>
             <MenuItem Header="_View">
-                <MenuItem Header="_Python Console" />
+                <MenuItem Header="_Python Console" Command="{Binding OpenPythonConsoleCommand}" />
                 <MenuItem Header="_Node Library" />
             </MenuItem>
             <MenuItem Header="_Help">
@@ -94,7 +94,8 @@
                 BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" Margin="10,5">
                 <TextBlock Text="Ready" />
-                <TextBlock Text=" | Python: Not Connected" Margin="10,0,0,0" />
+                <TextBlock Text=" | " Margin="10,0,0,0" />
+                <TextBlock Text="{Binding PythonStatus}" />
             </StackPanel>
         </Border>
     </Grid>

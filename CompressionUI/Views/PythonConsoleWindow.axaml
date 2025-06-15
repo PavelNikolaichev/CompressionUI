@@ -1,0 +1,106 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CompressionUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="CompressionUI.Views.PythonConsoleWindow"
+        x:DataType="vm:PythonConsoleViewModel"
+        Title="Python Console"
+        Width="800" Height="600"
+        MinWidth="600" MinHeight="400">
+
+    <Design.DataContext>
+        <vm:PythonConsoleViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*,Auto,Auto">
+        
+        <!-- Output Area -->
+        <Border Grid.Row="0" 
+                Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="1"
+                Margin="10,10,10,5">
+            <ScrollViewer Name="OutputScrollViewer" 
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Auto">
+                <SelectableTextBlock Text="{Binding OutputText}"
+                                   FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                                   FontSize="12"
+                                   Margin="5"
+                                   Background="Transparent"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Input Area -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                BorderThickness="1"
+                Margin="10,5,10,5">
+            <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Grid.Column="0" 
+                          Text=">>> " 
+                          FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                          FontSize="12"
+                          VerticalAlignment="Center"
+                          Margin="5,0,0,0"
+                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                
+                <TextBox Grid.Column="1"
+                        Name="InputTextBox"
+                        Text="{Binding InputText}"
+                        FontFamily="Consolas, Monaco, 'Courier New', monospace"
+                        FontSize="12"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        KeyDown="OnInputKeyDown"
+                        IsEnabled="{Binding !IsExecuting}"/>
+            </Grid>
+        </Border>
+
+        <!-- Control Panel -->
+        <StackPanel Grid.Row="2" 
+                   Orientation="Horizontal" 
+                   HorizontalAlignment="Right"
+                   Margin="10,5,10,10">
+            
+            <TextBlock Text="Ctrl+Enter to execute • Up/Down for history"
+                      VerticalAlignment="Center"
+                      Margin="0,0,20,0"
+                      Opacity="0.7"
+                      FontSize="11"/>
+            
+            <Button Content="Execute"
+                   Command="{Binding ExecuteCommand}"
+                   IsEnabled="{Binding !IsExecuting}"
+                   Margin="0,0,10,0"
+                   Padding="15,5"/>
+            
+            <Button Content="Clear"
+                   Command="{Binding ClearCommand}"
+                   Padding="15,5"/>
+        </StackPanel>
+
+        <!-- Loading Indicator -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+               Background="#80000000"
+               IsVisible="{Binding IsExecuting}">
+            <StackPanel HorizontalAlignment="Center" 
+                       VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" 
+                           Width="200" 
+                           Height="4"
+                           Margin="0,0,0,10"/>
+                <TextBlock Text="Executing Python code..."
+                          HorizontalAlignment="Center"
+                          Foreground="White"
+                          FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

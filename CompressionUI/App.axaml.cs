@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using CompressionUI.Services;
 using CompressionUI.ViewModels;
 using CompressionUI.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,5 +45,6 @@ public partial class App : Application
         services.AddLogging(builder => builder.AddSerilog());
         services.AddSingleton<MainWindowViewModel>();
         // Add other services here as we develop them
+        services.AddSingleton<PythonService>();
     }
 }
