@@ -44,7 +44,21 @@ public partial class App : Application
     {
         services.AddLogging(builder => builder.AddSerilog());
         services.AddSingleton<MainWindowViewModel>();
-        // Add other services here as we develop them
+        
+        // Python service
         services.AddSingleton<PythonService>();
+        
+        // Nodes registry
+        services.AddSingleton<INodeRegistry, NodeRegistry>();
+        services.AddSingleton<NodeFactory>();
+        
+        // Node Types
+        services.AddTransient<Models.Nodes.Utility.DebugPrintNode>();
+        services.AddTransient<Models.Nodes.Utility.VariableNode>();
+        services.AddTransient<Models.Nodes.Utility.MemoryCleanupNode>();
+        services.AddTransient<Models.Nodes.Data.TextDataLoaderNode>();
+        services.AddTransient<Models.Nodes.Data.ImageDataLoaderNode>();
+        services.AddTransient<Models.Nodes.Math.ArithmeticNode>();
+        services.AddTransient<Models.Nodes.Model.PyTorchModelNode>();
     }
 }

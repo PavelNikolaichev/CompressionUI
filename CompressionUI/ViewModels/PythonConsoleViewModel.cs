@@ -117,7 +117,7 @@ public class PythonConsoleViewModel : ViewModelBase
     {
         switch (e.Key)
         {
-            // TODO: input field doesn't work with Shift+Enter due to the way Avalonia handles key events
+            // TODO: input field doesn't work with hotkeys due to the way Avalonia handles key events
             case Key.Enter when !e.KeyModifiers.HasFlag(KeyModifiers.Shift):
                 await ExecuteCodeAsync();
                 e.Handled = true;

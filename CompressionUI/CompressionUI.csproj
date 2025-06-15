@@ -44,7 +44,6 @@
     <ItemGroup>
       <Folder Include="Core\Extensions\" />
       <Folder Include="Core\Interfaces\" />
-      <Folder Include="Models\Nodes\" />
       <Folder Include="Models\Pipeline\" />
     </ItemGroup>
 

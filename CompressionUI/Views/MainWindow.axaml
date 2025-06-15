@@ -27,7 +27,7 @@
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="_Python Console" Command="{Binding OpenPythonConsoleCommand}" />
-                <MenuItem Header="_Node Library" />
+                <MenuItem Header="_Test Node Registry" Command="{Binding TestNodeRegistryCommand}" />
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" />
@@ -96,6 +96,8 @@
                 <TextBlock Text="Ready" />
                 <TextBlock Text=" | " Margin="10,0,0,0" />
                 <TextBlock Text="{Binding PythonStatus}" />
+                <TextBlock Text=" | " Margin="10,0,0,0" />
+                <TextBlock Text="{Binding NodeRegistryStatus}" />
             </StackPanel>
         </Border>
     </Grid>
