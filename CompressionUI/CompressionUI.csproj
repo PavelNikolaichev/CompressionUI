@@ -17,20 +17,22 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
+        <PackageReference Include="Avalonia" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0" />
+        
+        <!-- Node Editor for Avalonia -->
+<!--        <PackageReference Include="NodifyM.Avalonia" Version="1.0.17" />-->
+        <PackageReference Include="NodifyAvalonia" Version="6.5.0" />
         
         <!-- Remove Avalonia.Diagnostics package from build output in Release -->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.1.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 
         <!-- Python integration -->
         <PackageReference Include="pythonnet" Version="3.0.5" />
-
-        <!-- Node Editor on Avalonia -->
-        <PackageReference Include="NodifyM.Avalonia" Version="1.0.0" />
 
         <!-- Other stuff for logging and such -->
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />

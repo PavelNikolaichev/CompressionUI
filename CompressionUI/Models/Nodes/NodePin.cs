@@ -17,6 +17,7 @@ public class NodePin
     public string Id { get; }
     public string Name { get; set; }
     public string Description { get; set; }
+    // public string DisplayName { get; set; }
     public DataType DataType { get; set; }
     public PinDirection Direction { get; }
     public INode Owner { get; }
@@ -27,7 +28,25 @@ public class NodePin
     public IReadOnlyList<NodeConnection> Connections => _connections.AsReadOnly();
 
     public bool IsConnected => _connections.Count > 0;
-    public object? Value { get; set; }
+    
+    private object? _value;
+    public object? Value 
+    { 
+        get => _value;
+        set
+        {
+            if (!Equals(_value, value))
+            {
+                _value = value;
+                ValueChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Event that fires when the pin value changes
+    /// </summary>
+    public event EventHandler? ValueChanged;
 
     public NodePin(string id, string name, DataType dataType, PinDirection direction, INode owner)
     {

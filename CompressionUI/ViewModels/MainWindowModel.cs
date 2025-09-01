@@ -4,6 +4,7 @@ using CompressionUI.Views;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CompressionUI.Services.Execution;
+using CompressionUI.ViewModels.NodeEditor;
 
 namespace CompressionUI.ViewModels;
 
@@ -36,9 +37,23 @@ public class MainWindowViewModel : ViewModelBase
         _logger.LogInformation("MainWindowViewModel initialized");
         
         // Commands
-        OpenPythonConsoleCommand = new RelayCommand(() => OpenPythonConsole());
+        OpenPythonConsoleCommand = new RelayCommand(OpenPythonConsole); // TODO: into async
         TestNodeRegistryCommand = new RelayCommand(async () => await TestNodeRegistryAsync());
         TestSerializationCommand = new RelayCommand(async () => await TestSerializationAsync());
+        OpenNodeEditorCommand = new RelayCommand(() =>
+        {
+            var editorWindow = new NodeEditorWindow
+            {
+                DataContext = new NodeEditorViewModel(
+                    _nodeRegistry, 
+                    _nodeFactory, 
+                    _executionService, 
+                    _serializationService,
+                    LoggerFactory.Create(builder => builder.AddConsole())
+                        .CreateLogger<NodeEditorViewModel>())
+            };
+            editorWindow.Show();
+        });
 
         // Initialize services in the background
         _ = InitializeServicesAsync();
@@ -61,6 +76,7 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand OpenPythonConsoleCommand { get; }
     public ICommand TestNodeRegistryCommand { get; }
     public ICommand TestSerializationCommand { get; }
+    public ICommand OpenNodeEditorCommand { get; }
 
     private async Task InitializeServicesAsync()
     {

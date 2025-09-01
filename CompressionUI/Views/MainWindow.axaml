@@ -27,6 +27,7 @@
             </MenuItem>
             <MenuItem Header="_Tools">
                 <MenuItem Header="_Python Console" Command="{Binding OpenPythonConsoleCommand}" />
+                <MenuItem Header="_Visual Node Editor" Command="{Binding OpenNodeEditorCommand}" />
                 <MenuItem Header="_Test Node Registry" Command="{Binding TestNodeRegistryCommand}" />
                 <!-- <MenuItem Header="_Test Node Execution" Command="{Binding TestNodeExecutionCommand}" /> -->
                 <MenuItem Header="_Test Serialization" Command="{Binding TestSerializationCommand}" />

@@ -1,0 +1,184 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:nodify="https://miroiu.github.io/nodify"
+             xmlns:nodes="using:CompressionUI.ViewModels.Nodes"
+             xmlns:nodeEditor="clr-namespace:CompressionUI.ViewModels.NodeEditor"
+             xmlns:services="clr-namespace:CompressionUI.Services"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="CompressionUI.Views.NodeEditorView"
+             x:DataType="nodeEditor:NodeEditorViewModel">
+
+  <UserControl.Resources>
+    <!-- Connection Template -->
+    <DataTemplate x:Key="ConnectionTemplate"
+                  DataType="{x:Type nodes:VisualConnectionViewModel}"
+                  x:DataType="nodes:VisualConnectionViewModel">
+      <nodify:LineConnection Source="{Binding Output.Anchor}"
+                             Target="{Binding Input.Anchor}"
+                             Stroke="CornflowerBlue"
+                             StrokeThickness="2" />
+    </DataTemplate>
+
+    <!-- Item Container Style -->
+    <ControlTheme x:Key="ItemContainerStyle"
+                  TargetType="{x:Type nodify:ItemContainer}"
+                  BasedOn="{StaticResource {x:Type nodify:ItemContainer}}"
+                  x:DataType="nodes:VisualNodeViewModel">
+      <Setter Property="Location" Value="{Binding Location}" />
+      <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+      <Setter Property="ActualSize" Value="{Binding Size, Mode=OneWayToSource}" />
+    </ControlTheme>
+  </UserControl.Resources>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="250" />
+      <ColumnDefinition Width="4" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Node Library Panel -->
+    <Border Grid.Column="0" 
+            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,0,1,0">
+      <DockPanel Margin="8">
+        <TextBlock DockPanel.Dock="Top" Text="Node Library" FontWeight="Bold" Margin="0,0,0,8" />
+        
+        <!-- Toolbar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+          <Button Content="▶" Command="{Binding ExecuteGraphCommand}" 
+                  Classes="accent" Margin="0,0,4,0" Width="30" Height="30"
+                  ToolTip.Tip="Execute Graph" />
+          <Button Content="🗑" Command="{Binding ClearGraphCommand}" 
+                  Width="30" Height="30" ToolTip.Tip="Clear Graph" />
+        </StackPanel>
+        
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding AvailableOperations}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="services:NodeTypeInfo">
+                <Button Content="{Binding DisplayName}"
+                        Command="{Binding $parent[UserControl].((nodeEditor:NodeEditorViewModel)DataContext).CreateNodeCommand}"
+                        CommandParameter="{Binding TypeName}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Margin="0,2"
+                        ToolTip.Tip="{Binding Description}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
+    <GridSplitter Grid.Column="1" />
+
+    <!-- Main Editor -->
+    <nodify:NodifyEditor Grid.Column="2"
+                         ItemsSource="{Binding Operations}"
+                         Connections="{Binding Connections}"
+                         SelectedItems="{Binding SelectedOperations}"
+                         ConnectionTemplate="{StaticResource ConnectionTemplate}"
+                         ItemContainerTheme="{StaticResource ItemContainerStyle}"
+                         Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+                         GridCellSize="20">
+
+      <!-- Node Templates -->
+      <nodify:NodifyEditor.DataTemplates>
+        <DataTemplate DataType="{x:Type nodes:VisualNodeViewModel}"
+                      x:DataType="nodes:VisualNodeViewModel">
+          <nodify:Node Header="{Binding Title}"
+                       Input="{Binding Input}"
+                       Output="{Binding Output}">
+            <StackPanel Margin="8">
+              <TextBlock Text="{Binding Description}" 
+                         FontSize="11" 
+                         Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                         TextWrapping="Wrap"
+                         MaxWidth="120" />
+              <TextBlock Text="{Binding StatusText}"
+                         FontSize="10"
+                         HorizontalAlignment="Center"
+                         Margin="0,4,0,0" />
+            </StackPanel>
+          </nodify:Node>
+        </DataTemplate>
+      </nodify:NodifyEditor.DataTemplates>
+
+      <!-- Resources for pin styling -->
+      <nodify:NodifyEditor.Resources>
+        <ControlTheme TargetType="{x:Type nodify:NodeInput}"
+                      x:Key="{x:Type nodify:NodeInput}"
+                      BasedOn="{StaticResource {x:Type nodify:NodeInput}}"
+                      x:DataType="nodes:VisualPinViewModel">
+          <Setter Property="Header" Value="{Binding}" />
+          <Setter Property="IsConnected" Value="{Binding IsConnected}" />
+          <Setter Property="Anchor" Value="{Binding Anchor, Mode=OneWayToSource}" />
+          <Setter Property="HeaderTemplate">
+            <Setter.Value>
+              <DataTemplate DataType="{x:Type nodes:VisualPinViewModel}"
+                            x:DataType="nodes:VisualPinViewModel">
+                <StackPanel Orientation="Horizontal">
+                  <Ellipse Width="8" Height="8" Fill="LightBlue" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </Setter.Value>
+          </Setter>
+        </ControlTheme>
+
+        <ControlTheme TargetType="{x:Type nodify:NodeOutput}"
+                      x:Key="{x:Type nodify:NodeOutput}"
+                      BasedOn="{StaticResource {x:Type nodify:NodeOutput}}"
+                      x:DataType="nodes:VisualPinViewModel">
+          <Setter Property="Header" Value="{Binding}" />
+          <Setter Property="IsConnected" Value="{Binding IsConnected}" />
+          <Setter Property="Anchor" Value="{Binding Anchor, Mode=OneWayToSource}" />
+          <Setter Property="HeaderTemplate">
+            <Setter.Value>
+              <DataTemplate DataType="{x:Type nodes:VisualPinViewModel}"
+                            x:DataType="nodes:VisualPinViewModel">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                  <Ellipse Width="8" Height="8" Fill="Orange" Margin="4,0,0,0" />
+                </StackPanel>
+              </DataTemplate>
+            </Setter.Value>
+          </Setter>
+        </ControlTheme>
+      </nodify:NodifyEditor.Resources>
+
+      <!-- Key Bindings -->
+      <nodify:NodifyEditor.KeyBindings>
+        <KeyBinding Gesture="Delete" Command="{Binding DeleteSelectionCommand}" />
+      </nodify:NodifyEditor.KeyBindings>
+
+    </nodify:NodifyEditor>
+
+    <!-- Status Bar -->
+    <Border Grid.Column="0" Grid.ColumnSpan="3"
+            VerticalAlignment="Bottom"
+            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="8,4">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Column="0" Text="{Binding StatusText}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+          <TextBlock Text="{Binding Operations.Count, StringFormat='Nodes: {0}'}" Margin="8,0" />
+          <TextBlock Text="{Binding Connections.Count, StringFormat='Connections: {0}'}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+  </Grid>
+
+</UserControl>

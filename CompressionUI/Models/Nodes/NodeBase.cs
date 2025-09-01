@@ -94,6 +94,92 @@ public abstract class NodeBase : INode, INotifyPropertyChanged, IDisposable
         }
     }
 
+    protected NodeBase(NodeBase inputNode, NodeBase outputNode, ILogger? logger = null)
+    {
+        // Create a node that connects inputNode and outputNode with a default connection
+        Id = Guid.NewGuid().ToString();
+        _logger = logger;
+        _name = GetType().Name.Replace("Node", "");
+        
+        // Subscribe to property changes
+        foreach (var property in _properties)
+        {
+            property.PropertyChanged += OnNodePropertyChanged;
+        }
+        
+        // Automatically create a connection from inputNode's first output to this node's first input
+        if (inputNode.OutputPins.Any())
+        {
+            // Connect all the input pins of this node to the first output pins of inputNode
+            if (inputNode.OutputPins.Count != InputPins.Count)
+            {
+                _logger?.LogWarning(
+                    "Input node output pin count does not match this node's input pin count," +
+                    " connection may be incomplete, Node info: {NodeName}",
+                    Name);
+            }
+            
+            // Connect as many pins as possible
+            for (var i = 0; i < System.Math.Min(inputNode.OutputPins.Count, InputPins.Count); i++)
+            {
+                var outputPin = inputNode.OutputPins[i];
+                var inputPin = InputPins[i];
+
+                if (inputPin.IsConnected)
+                {
+                    continue;
+                }
+                
+                var connection = new NodeConnection(outputPin, inputPin);
+                
+                _logger?.LogInformation(
+                    "Auto-connected {OutputNode}.{OutputPin} to {InputNode}.{InputPin}," +
+                    " Connection info: {ConnectionId}",
+                    inputNode.Name, outputPin.Name, Name, inputPin.Name, connection.Id);
+            }
+        } else {
+            _logger?.LogWarning(
+                "Input node has no output pins to connect from, Node info: {NodeName}",
+                inputNode.Name);
+        }
+        
+        // Automatically sequentially connect this node's first output to outputNode's first input
+        if (outputNode.InputPins.Any())
+        {
+            // Connect all the output pins of this node to the first input pins of outputNode
+            if (outputNode.InputPins.Count != OutputPins.Count)
+            {
+                _logger?.LogWarning(
+                    "Output node input pin count does not match this node's output pin count," +
+                    " connection may be incomplete, Node info: {NodeName}",
+                    Name);
+            }
+            
+            // Connect as many pins as possible
+            for (var i = 0; i < System.Math.Min(outputNode.InputPins.Count, OutputPins.Count); i++)
+            {
+                var inputPin = outputNode.InputPins[i];
+                var outputPin = OutputPins[i];
+
+                if (outputPin.IsConnected)
+                {
+                    continue;
+                }
+                
+                var connection = new NodeConnection(outputPin, inputPin);
+                
+                _logger?.LogInformation(
+                    "Auto-connected {OutputNode}.{OutputPin} to {InputNode}.{InputPin}," +
+                    " Connection info: {ConnectionId}",
+                    Name, outputPin.Name, outputNode.Name, inputPin.Name, connection.Id);
+            }
+        } else {
+            _logger?.LogWarning(
+                "Output node has no input pins to connect to, Node info: {NodeName}",
+                outputNode.Name);
+        }
+    }
+    
     // Abstract methods that derived classes must implement
     protected abstract Task<NodeExecutionResult> ExecuteInternalAsync(NodeExecutionContext context);
     protected abstract void InitializePinsAndProperties();
